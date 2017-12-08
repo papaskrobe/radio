@@ -7,7 +7,7 @@ root.geometry("320x240")
 selector = tk.Frame(root)
 selector.grid(row=0, column=0)
 
-bands = tuple([(i.split('/'))[-1] for i in glob.glob('/home/ryan/Music/*')])
+bands = tuple(sorted([(i.split('/'))[-1] for i in glob.glob('/home/ryan/Music/*')]))
 bnames = tk.StringVar(value=bands)
 
 yScroll = tk.Scrollbar(orient=tk.VERTICAL)
@@ -16,8 +16,9 @@ yScroll.grid(row=0,column=1, sticky=tk.N+tk.S)
 def select_album(evt):
 	bPlay.config(state=tk.NORMAL)
 
+tk.Label(selector, text="Albums:").grid(column=1, row=0)
 lAlbums = tk.Listbox(selector, height=8, exportselection=False)
-lAlbums.grid(column=1, row=0)
+lAlbums.grid(column=1, row=1)
 lAlbums.bind('<<ListboxSelect>>', select_album)
 
 def select_band(evt):
@@ -28,10 +29,12 @@ def select_band(evt):
 	lAlbums.delete(0, 100)
 	for i in albums:
 		lAlbums.insert(tk.END, i) #tk.StringVar(value=songs))
+	bPlay.config(state=tk.DISABLED)
 
+tk.Label(selector, text="Bands:").grid(column=0, row=0)
 lBands = tk.Listbox(selector, yscrollcommand=yScroll.set, listvariable=bnames, height=8, selectmode=tk.SINGLE, exportselection=False)
 lBands.bind('<<ListboxSelect>>', select_band)
-lBands.grid(column=0, row=0)
+lBands.grid(column=0, row=1)
 yScroll['command']=lBands.yview
 
 def play():
