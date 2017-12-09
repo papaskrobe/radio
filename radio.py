@@ -46,8 +46,8 @@ selector.grid(row=0, column=0)
 bands = tuple(sorted([(i.split('/'))[-1] for i in glob.glob(music_folder + '*')]))
 bnames = tk.StringVar(value=bands)
 
-yScroll = tk.Scrollbar(orient=tk.VERTICAL)
-yScroll.grid(row=0,column=1, sticky=tk.N+tk.S)
+yScroll = tk.Scrollbar(selector, orient=tk.VERTICAL)
+yScroll.grid(row=1,column=1, sticky=tk.N+tk.S)
 
 def select_album(evt):
 	bPlay.config(state=tk.NORMAL)
