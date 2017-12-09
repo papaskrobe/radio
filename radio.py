@@ -3,6 +3,7 @@ import glob
 import id3reader
 import pygame
 import time
+import threading
 
 music_folder = '/home/ryan/Music/'
 
@@ -13,6 +14,29 @@ tracks = ()
 
 pygame.mixer.init()
 player = pygame.mixer.music
+
+def watcher():
+	global playing
+	global track
+	global paused
+	global tracks
+	global player
+	while True:
+		time.sleep(0.25)
+		if playing:
+			if not(player.get_busy()):
+				if track < (len(tracks)-1):
+					track += 1
+					player.load(tracks[track])
+					player.play()
+				else:
+					track = 0
+					playing = False
+
+w = threading.Thread(target=watcher)
+w.setDaemon(True)
+
+w.start()
 
 root = tk.Tk()
 root.geometry("320x240")
@@ -29,7 +53,7 @@ def select_album(evt):
 	bPlay.config(state=tk.NORMAL)
 
 lAlbums = tk.Listbox(selector, height=6, exportselection=False)
-lAlbums.grid(column=1, row=1)
+lAlbums.grid(column=2, row=1)
 lAlbums.bind('<<ListboxSelect>>', select_album)
 
 def select_band(evt):
