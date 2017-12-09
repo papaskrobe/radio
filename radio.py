@@ -2,6 +2,14 @@ import Tkinter as tk
 import glob
 import id3reader
 import pygame
+import time
+
+music_folder = '/home/ryan/Music/'
+
+playing = False
+track = 0
+paused = False
+tracks = ()
 
 pygame.mixer.init()
 player = pygame.mixer.music
@@ -11,7 +19,7 @@ root.geometry("320x240")
 selector = tk.Frame(root)
 selector.grid(row=0, column=0)
 
-bands = tuple(sorted([(i.split('/'))[-1] for i in glob.glob('/home/pi/Music/*')]))
+bands = tuple(sorted([(i.split('/'))[-1] for i in glob.glob(music_folder + '*')]))
 bnames = tk.StringVar(value=bands)
 
 yScroll = tk.Scrollbar(orient=tk.VERTICAL)
@@ -28,7 +36,7 @@ def select_band(evt):
 	w = evt.widget
 	index = int(w.curselection()[0])
 	value = w.get(index)
-	albums = tuple([(i.split('/'))[-1] for i in glob.glob('/home/pi/Music/' + value + '/*')])
+	albums = tuple([(i.split('/'))[-1] for i in glob.glob(music_folder + value + '/*')])
 	lAlbums.delete(0, 100)
 	for i in albums:
 		lAlbums.insert(tk.END, i) #tk.StringVar(value=songs))
@@ -39,27 +47,69 @@ lBands.bind('<<ListboxSelect>>', select_band)
 lBands.grid(column=0, row=1)
 yScroll['command']=lBands.yview
 
-def play():
+def play_album():
+	global playing
+	playing = True
+	global track
+	track = 0
+	global paused
+	paused = False
 	bandIndex = lBands.curselection()[0]
 	bandValue = lBands.get(bandIndex)
 	albumIndex = lAlbums.curselection()[0]
 	albumValue = lAlbums.get(albumIndex)
-	songs = tuple([(i.split('/'))[-1] for i in sorted(glob.glob('/home/pi/Music/' + bandValue + '/' + albumValue + '/*.mp3'),key=lambda i:int(id3reader.Reader(i).getValue('track').split('/')[0]))])
-	for i in songs:
-		print(i)
+	global tracks
+	tracks = tuple([sorted(glob.glob(music_folder + bandValue + '/' + albumValue + '/*.mp3'),key=lambda i:int(id3reader.Reader(i).getValue('track').split('/')[0]))])[0]
+	player.load(tracks[track])
+	player.play()
 
-
-bPlay = tk.Button(root, text='Play album', state=tk.DISABLED, command=play)
+bPlay = tk.Button(root, text='Play album', state=tk.DISABLED, command=play_album)
 bPlay.grid(column=0, row=1)
 
 controller = tk.Frame(root)
 controller.grid(column=0, row=2)
 
-bPrev = tk.Button(controller, text='|<')
+def prev():
+	global track
+	global tracks
+	if track > 0:
+		track -=1
+		player.load(tracks[track])
+		player.play()
+
+bPrev = tk.Button(controller, text='|<', command=prev)
 bPrev.grid(column=0, row=0)
-bPlayPause = tk.Button(controller, text='|| / >')
+
+def play_pause():
+	global track
+	global tracks
+	global playing
+	global paused
+	global player
+	if playing:
+		if paused:
+			player.unpause()
+		else:
+			player.pause()
+		paused = not(paused)
+	else:
+		track = 0
+		playing = True
+		player.load(tracks[track])
+		player.play()
+
+bPlayPause = tk.Button(controller, text='|| / >', command=play_pause)
 bPlayPause.grid(column=1, row=0)
-bNext = tk.Button(controller, text='>|')
+
+def next():
+	global track
+	global tracks
+	if track < len(tracks):
+		track += 1
+		player.load(tracks[track])
+		player.play()
+
+bNext = tk.Button(controller, text='>|', command=next)
 bNext.grid(column=2, row=0)
 
 tk.mainloop()
