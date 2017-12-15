@@ -46,15 +46,18 @@ selector.grid(row=0, column=0)
 bands = tuple(sorted([(i.split('/'))[-1] for i in glob.glob(music_folder + '*')]))
 bnames = tk.StringVar(value=bands)
 
-yScroll = tk.Scrollbar(selector, orient=tk.VERTICAL)
-yScroll.grid(row=1,column=1, sticky=tk.N+tk.S)
+bandScroll = tk.Scrollbar(selector, orient=tk.VERTICAL, width=20)
+bandScroll.grid(row=1,column=1, sticky=tk.N+tk.S)
+albumScroll = tk.Scrollbar(selector, orient=tk.VERTICAL, width=20)
+albumScroll.grid(row=1, column=3, sticky=tk.N+tk.S)
 
 def select_album(evt):
 	bPlay.config(state=tk.NORMAL)
 
-lAlbums = tk.Listbox(selector, height=6, exportselection=False)
+lAlbums = tk.Listbox(selector, yscrollcommand=albumScroll.set, height=6, exportselection=False, width=17)
 lAlbums.grid(column=2, row=1)
 lAlbums.bind('<<ListboxSelect>>', select_album)
+albumScroll['command']=lAlbums.yview
 
 def select_band(evt):
 	w = evt.widget
@@ -66,10 +69,11 @@ def select_band(evt):
 		lAlbums.insert(tk.END, i) #tk.StringVar(value=songs))
 	bPlay.config(state=tk.DISABLED)
 
-lBands = tk.Listbox(selector, yscrollcommand=yScroll.set, listvariable=bnames, height=6, selectmode=tk.SINGLE, exportselection=False)
+
+lBands = tk.Listbox(selector, yscrollcommand=bandScroll.set, listvariable=bnames, height=6, selectmode=tk.SINGLE, exportselection=False, width=16)
 lBands.bind('<<ListboxSelect>>', select_band)
 lBands.grid(column=0, row=1)
-yScroll['command']=lBands.yview
+bandScroll['command']=lBands.yview
 
 def play_album():
 	global playing
@@ -86,6 +90,8 @@ def play_album():
 	tracks = tuple([sorted(glob.glob(music_folder + bandValue + '/' + albumValue + '/*.mp3'),key=lambda i:int(id3reader.Reader(i).getValue('track').split('/')[0]))])[0]
 	player.load(tracks[track])
 	player.play()
+	global root
+	root.wm_title(bandValue + " - " + albumValue)
 
 bPlay = tk.Button(root, text='Play album', state=tk.DISABLED, command=play_album)
 bPlay.grid(column=0, row=1)
