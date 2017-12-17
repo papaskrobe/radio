@@ -94,7 +94,7 @@ def play_album():
 	root.wm_title(bandValue + " - " + albumValue)
 
 bPlay = tk.Button(root, text='Play album', state=tk.DISABLED, command=play_album)
-bPlay.grid(column=0, row=1, sticky=tk.E)
+bPlay.grid(column=0, row=1, sticky=tk.E, padx=42)
 
 controller = tk.Frame(root)
 controller.grid(column=0, row=2)
