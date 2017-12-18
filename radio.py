@@ -155,10 +155,8 @@ if os.path.isfile(".status.json"):
 	tracks = status['tracks']
 	player.load(tracks[track])
 	root.wm_title(tracks[track].split("/")[-3] + " - " + tracks[track].split("/")[-2])
-	if pygame.ver == "1.9.2a0":
-		player.set_pos(status['position'])
 	if playing and not(paused):
-		player.play()
+		player.play(-1, (status['position'] / 1000.0))
 
 #saving state to file on close
 def on_closing():
