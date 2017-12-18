@@ -4,6 +4,8 @@ import id3reader
 import pygame
 import time
 import threading
+import json
+import os.path
 
 music_folder = '/home/ryan/Music/'
 
@@ -134,6 +136,7 @@ bPlayPause.grid(column=1, row=0)
 def next():
 	global track
 	global tracks
+	global player
 	if track < len(tracks):
 		track += 1
 		player.load(tracks[track])
@@ -141,5 +144,28 @@ def next():
 
 bNext = tk.Button(controller, text='>|', command=next)
 bNext.grid(column=2, row=0)
+
+#loading state from file on startup
+if os.path.isfile(".status.json"):
+	file = open(".status.json", "r")
+	status = json.loads(file.read())
+	playing = status['playing']
+	track = status['track']
+	paused = status['paused']
+	tracks = status['tracks']
+	player.load(tracks[track])
+	root.wm_title(tracks[track].split("/")[-3] + " - " + tracks[track].split("/")[-2])
+	if pygame.ver == "1.9.2a0":
+		player.set_pos(status['position'])
+	if playing and not(paused):
+		player.play()
+
+#saving state to file on close
+def on_closing():
+	file = open(".status.json", "w")
+	file.write(json.dumps({"playing": playing, "paused": paused, "tracks": tracks, "track": track, "position": player.get_pos()}))
+	root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 tk.mainloop()
