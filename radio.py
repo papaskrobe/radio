@@ -154,7 +154,14 @@ if os.path.isfile(".status.json"):
 	paused = status['paused']
 	tracks = status['tracks']
 	player.load(tracks[track])
+	lBands.selection_set(lBands.get(0, tk.END).index(tracks[track].split("/")[-3]))
+	albums = tuple([(i.split('/'))[-1] for i in glob.glob(music_folder + tracks[track].split("/")[-3] + '/*')])
+	lAlbums.delete(0, 100)
+	for i in albums:
+		lAlbums.insert(tk.END, i) #tk.StringVar(value=songs))
+	lAlbums.selection_set(lAlbums.get(0, tk.END).index(tracks[track].split("/")[-2]))
 	root.wm_title(tracks[track].split("/")[-3] + " - " + tracks[track].split("/")[-2])
+	bPlay.config(state=tk.NORMAL)
 	if playing and not(paused):
 		player.play(-1, (status['position'] / 1000.0))
 
