@@ -100,7 +100,7 @@ def play_album():
 	root.wm_title(bandValue + " - " + albumValue)
 
 bPlay = tk.Button(root, text='Play album', state=tk.DISABLED, command=play_album, font=control_font)
-bPlay.grid(column=0, row=1, sticky=tk.E, padx=42)
+bPlay.grid(column=0, row=1, sticky=tk.E, padx=20)
 
 controller = tk.Frame(root)
 controller.grid(column=0, row=2)
@@ -118,8 +118,6 @@ def prev():
 
 bPrev = tk.Button(controller, text='|<', command=prev, font=control_font)
 bPrev.grid(column=0, row=0)
-
-
 
 def play_pause():
 	global track
