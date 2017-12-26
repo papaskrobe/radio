@@ -146,8 +146,8 @@ bNext = tk.Button(controller, text='>|', command=next)
 bNext.grid(column=2, row=0)
 
 #loading state from file on startup
-if os.path.isfile(".status.json"):
-	file = open(".status.json", "r")
+if os.path.isfile(music_folder + ".status.json"):
+	file = open(music_folder + ".status.json", "r")
 	status = json.loads(file.read())
 	playing = status['playing']
 	track = status['track']
@@ -167,7 +167,7 @@ if os.path.isfile(".status.json"):
 
 #saving state to file on close
 def on_closing():
-	file = open(".status.json", "w")
+	file = open(music_folder + ".status.json", "w")
 	file.write(json.dumps({"playing": playing, "paused": paused, "tracks": tracks, "track": track, "position": player.get_pos()}))
 	root.destroy()
 
