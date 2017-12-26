@@ -1,4 +1,5 @@
 import Tkinter as tk
+import tkFont
 import glob
 import id3reader
 import pygame
@@ -37,26 +38,27 @@ def watcher():
 
 w = threading.Thread(target=watcher)
 w.setDaemon(True)
-
 w.start()
 
 root = tk.Tk()
-root.geometry("320x240")
+root.geometry("320x215")
 selector = tk.Frame(root)
 selector.grid(row=0, column=0)
 
 bands = tuple(sorted([(i.split('/'))[-1] for i in glob.glob(music_folder + '*')]))
 bnames = tk.StringVar(value=bands)
 
-bandScroll = tk.Scrollbar(selector, orient=tk.VERTICAL, width=20)
+bandScroll = tk.Scrollbar(selector, orient=tk.VERTICAL, width=24)
 bandScroll.grid(row=1,column=1, sticky=tk.N+tk.S)
-albumScroll = tk.Scrollbar(selector, orient=tk.VERTICAL, width=20)
+albumScroll = tk.Scrollbar(selector, orient=tk.VERTICAL, width=24)
 albumScroll.grid(row=1, column=3, sticky=tk.N+tk.S)
 
 def select_album(evt):
 	bPlay.config(state=tk.NORMAL)
 
-lAlbums = tk.Listbox(selector, yscrollcommand=albumScroll.set, height=6, exportselection=False, width=17)
+listbox_font = tkFont.Font(size=12)
+
+lAlbums = tk.Listbox(selector, yscrollcommand=albumScroll.set, height=4, exportselection=False, width=13, font=listbox_font)
 lAlbums.grid(column=2, row=1)
 lAlbums.bind('<<ListboxSelect>>', select_album)
 albumScroll['command']=lAlbums.yview
@@ -72,10 +74,12 @@ def select_band(evt):
 	bPlay.config(state=tk.DISABLED)
 
 
-lBands = tk.Listbox(selector, yscrollcommand=bandScroll.set, listvariable=bnames, height=6, selectmode=tk.SINGLE, exportselection=False, width=16)
+lBands = tk.Listbox(selector, yscrollcommand=bandScroll.set, listvariable=bnames, height=4, selectmode=tk.SINGLE, exportselection=False, width=13, font=listbox_font)
 lBands.bind('<<ListboxSelect>>', select_band)
 lBands.grid(column=0, row=1)
 bandScroll['command']=lBands.yview
+
+control_font = tkFont.Font(size=16)
 
 def play_album():
 	global playing
@@ -95,11 +99,14 @@ def play_album():
 	global root
 	root.wm_title(bandValue + " - " + albumValue)
 
-bPlay = tk.Button(root, text='Play album', state=tk.DISABLED, command=play_album)
+bPlay = tk.Button(root, text='Play album', state=tk.DISABLED, command=play_album, font=control_font)
 bPlay.grid(column=0, row=1, sticky=tk.E, padx=42)
 
 controller = tk.Frame(root)
 controller.grid(column=0, row=2)
+
+#Control buttons: Prev, PlayPause, Next
+
 
 def prev():
 	global track
@@ -109,8 +116,10 @@ def prev():
 		player.load(tracks[track])
 		player.play()
 
-bPrev = tk.Button(controller, text='|<', command=prev)
+bPrev = tk.Button(controller, text='|<', command=prev, font=control_font)
 bPrev.grid(column=0, row=0)
+
+
 
 def play_pause():
 	global track
@@ -130,7 +139,7 @@ def play_pause():
 		player.load(tracks[track])
 		player.play()
 
-bPlayPause = tk.Button(controller, text='|| / >', command=play_pause)
+bPlayPause = tk.Button(controller, text='|| / >', command=play_pause, font=control_font)
 bPlayPause.grid(column=1, row=0)
 
 def next():
@@ -142,7 +151,7 @@ def next():
 		player.load(tracks[track])
 		player.play()
 
-bNext = tk.Button(controller, text='>|', command=next)
+bNext = tk.Button(controller, text='>|', command=next, font=control_font)
 bNext.grid(column=2, row=0)
 
 #loading state from file on startup
