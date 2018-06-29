@@ -170,7 +170,7 @@ if os.path.isfile(music_folder + ".status.json"):
 	root.wm_title(tracks[track].split("/")[-3] + " - " + tracks[track].split("/")[-2])
 	bPlay.config(state=tk.NORMAL)
 	if playing and not(paused):
-		player.play(-1, (status['position'] / 1000.0))
+		player.play(0, (status['position'] / 1000.0))
 
 #saving state to file on close
 def on_closing():
